@@ -45,7 +45,7 @@ def get_pay_url(tn, subject, total_fee, callback=None):
     async_http_client = AsyncHTTPClient()
     data = urllib.urlencode(token_params)
 
-    response = yield async_http_client.fetch(request_url, body=data)
+    response = yield async_http_client.fetch(request_url, method='POST', body=data)
     response_params = parse_response(response.body)
     #获得token
     token = response_params["request_token"]
@@ -68,7 +68,7 @@ def parse_response(query_params):
     <returns>解析结果</returns>
     """
     params = _parse_qs(query_params, True)
-    if params["res_data"]:
+    if "res_data" in params:
         if Settings.SIGN_TYPE == "0001":
             # TODO RSA 解密
             params["res_data"] = "<r>解密结果</r>"

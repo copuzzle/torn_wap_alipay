@@ -5,7 +5,7 @@ from tornado.escape import utf8
 from tornado import gen
 from tornado.httpclient import AsyncHTTPClient
 from config import Settings
-from wap_alipay.hashcompat import md5_constructor
+from hashcompat import md5_constructor
 
 
 def build_request_params(params):
@@ -23,6 +23,7 @@ def params_filter(params):
     """
 
     ks = params.keys()
+    ks.sort()
     new_params = {}
     prestr = ""
     for k in ks:
@@ -78,7 +79,7 @@ def notify_verify(post, callback=None):
     order_params["trade_no"] = tree.find("trade_no").text
     order_params["out_trade_no"] = tree.find("out_trade_no").text
     order_params["trade_status"] = tree.find("trade_status").text
-    order_params["total_fee"] = tree.find("total_fee").text
+    order_params["total_fee"] = float(tree.find("total_fee").text)
 
     #二级验证---数据是否支付宝发送
     if notify_id:
@@ -93,7 +94,7 @@ def notify_verify(post, callback=None):
         async_client = AsyncHTTPClient()
         response = yield async_client.fetch(verify_url)
         if response.body.lower().strip() == 'true':
-            callback(True)
+            callback(order_params)
     callback(False)
 
 
