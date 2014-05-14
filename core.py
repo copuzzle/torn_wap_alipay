@@ -74,6 +74,7 @@ def notify_verify(post, callback=None):
     mysign = build_mysign(prestr, Settings.KEY)
     if mysign != post.get('sign'):
         callback(False)
+        return
     tree = Etree.fromstring(post["notify_data"])
     notify_id = tree.find("notify_id").text
     order_params["trade_no"] = tree.find("trade_no").text
@@ -95,6 +96,7 @@ def notify_verify(post, callback=None):
         response = yield async_client.fetch(verify_url)
         if response.body.lower().strip() == 'true':
             callback(order_params)
+            return
     callback(False)
 
 
